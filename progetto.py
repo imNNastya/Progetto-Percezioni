@@ -1,6 +1,9 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
 
 # 1. Caricamento train + test
 train = pd.read_csv("drugLibTrain_raw.tsv", sep="\t")
@@ -30,9 +33,7 @@ print(top)
 main_color = "#1f77b4"
 desaturated = "#aec7e8"
 
-# ======================================================
 # (1) DOT PLOT / LOLLIPOP
-# ======================================================
 #plt.figure(figsize=(10, 6))
 #plt.hlines(y=top.index, xmin=0, xmax=top.values, color=desaturated, linewidth=4)
 #plt.scatter(top.values, top.index, color=main_color, s=120)
@@ -68,9 +69,7 @@ plt.grid(axis='x', linestyle='--', alpha=0.3)
 plt.tight_layout()
 plt.show()
 
-# ======================================================
 # (2) BOXPLOT
-# ======================================================
 plt.figure(figsize=(10, 6))
 sns.boxplot(
     data=df_valid[df_valid["urlDrugName"].isin(top_drugs)],
@@ -84,9 +83,7 @@ plt.ylabel("Farmaco")
 plt.tight_layout()
 plt.show()
 
-# ======================================================
 # (3) HEATMAP EFFECTIVENESS
-# ======================================================
 # Convert effectiveness in numerico
 effect_map = {"Ineffective": 1,"Marginally Effective":2, "Moderately Effective": 3, "Considerably Effective": 4, "Highly Effective":5}
 df_valid["effectiveness_num"] = df_valid["effectiveness"].map(effect_map)
@@ -145,3 +142,86 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
+# Cosa fa questo codice:
+# estrae i farmaci della condition scelta
+# crea le feature necessarie
+# normalizza i dati
+# esegue K-Means
+# usa PCA per visualizzare i cluster in 2D
+
+# (4) CLUSTERING K-MEANS – Solo per la condition scelta
+print("\n=== CLUSTERING FARMACI PER CONDITION ===")
+
+# ---- 1) PREPARAZIONE DATI PER IL CLUSTERING ----
+cluster_df = (
+    df_valid
+    .groupby("urlDrugName")
+    .agg({
+        "rating": ["mean", "std", "count"],
+        "effectiveness_num": "mean"
+    })
+)
+
+cluster_df.columns = ["rating_mean", "rating_std", "n_reviews", "eff_mean"]
+cluster_df = cluster_df.fillna(0)
+
+print("\nFeature usate per il clustering:")
+print(cluster_df.head())
+
+# ---- 2) SCALING ----
+scaler = StandardScaler()
+scaled_features = scaler.fit_transform(cluster_df)
+
+# ---- 3) K-MEANS ----
+k = 3  # numero di cluster
+kmeans = KMeans(n_clusters=k, random_state=42)
+cluster_labels = kmeans.fit_predict(scaled_features)
+cluster_df["cluster_num"] = cluster_labels
+
+# ---- 4) ASSEGNA NOMI SIGNIFICATIVI AI CLUSTER ----
+# Ordiniamo i cluster per rating medio
+cluster_order = cluster_df.groupby("cluster_num")["rating_mean"].mean().sort_values(ascending=False)
+cluster_mapping = {num: name for num, name in zip(cluster_order.index, ["Top", "Medio", "Basso"])}
+# Top - farmaci con rating/efficacy più alti (secondo il k-means)
+# Medio - farmaci con valori medi
+# Basso - farmaci con valori più bassi
+cluster_df["cluster_name"] = cluster_df["cluster_num"].map(cluster_mapping)
+
+print("\nCluster assegnati con nomi significativi:")
+print(cluster_df[["rating_mean","eff_mean","n_reviews","cluster_name"]])
+
+# ---- 5) PCA PER VISUALIZZAZIONE 2D ----
+pca = PCA(n_components=2)
+pca_coords = pca.fit_transform(scaled_features)
+cluster_df["PC1"] = pca_coords[:, 0]
+cluster_df["PC2"] = pca_coords[:, 1]
+
+# ---- 6) GRAFICO DEI CLUSTER ----
+plt.figure(figsize=(10, 7))
+
+# palette
+palette_dict = {"Top": "#1f77b4", "Medio": "#ff7f0e", "Basso": "#2ca02c"}
+
+for cluster in cluster_df["cluster_name"].unique():
+    subset = cluster_df[cluster_df["cluster_name"] == cluster]
+    plt.scatter(
+        subset["PC1"],
+        subset["PC2"],
+        s=subset["n_reviews"] * 5,
+        label=f"{cluster} (n={len(subset)})",
+        alpha=0.7,
+        color=palette_dict[cluster]
+    )
+
+# Etichette dei farmaci più rilevanti
+for drug, row in cluster_df.iterrows():
+    if row["n_reviews"] > 5:
+        plt.text(row["PC1"], row["PC2"], drug, fontsize=8)
+
+plt.title(f"Clustering K-Means dei farmaci – Condition: {condition}", fontsize=16)
+plt.xlabel("PC1")
+plt.ylabel("PC2")
+plt.legend()
+plt.grid(True, linestyle="--", alpha=0.3)
+plt.tight_layout()
+plt.show()
