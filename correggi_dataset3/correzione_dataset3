@@ -1,0 +1,217 @@
+import pandas as pd
+import re
+
+# 1. Caricamento dei file (Input: V2 o V3 a seconda del flusso, qui uso i nomi richiesti)
+# Se stai lavorando sui file appena separati dal trattino, assicurati che i nomi coincidano.
+try:
+    df_train = pd.read_csv('drugLibTrain_final.tsv', sep='\t')
+    df_test = pd.read_csv('drugLibTest_final.tsv', sep='\t')
+except FileNotFoundError:
+    print("File '_final.tsv' non trovati. Provo a caricare le versioni '_final_v3.tsv'...")
+    df_train = pd.read_csv('drugLibTrain_final_v3.tsv', sep='\t')
+    df_test = pd.read_csv('drugLibTest_final_v3.tsv', sep='\t')
+
+# --- EXTENDED CORRECTION DICTIONARY (Aggiornato con analisi profonda) ---
+extended_map = {
+    # --- TYPOS & ORTOGRAFIA ---
+    'a.d.d.': 'adhd/add',
+    'addh': 'adhd/add',
+    'adha': 'adhd/add',
+    'adhd/add': 'adhd/add',
+    'alergies': 'allergies',
+    'alergy': 'allergies',
+    'allegry': 'allergies',
+    'anixety?': 'anxiety disorders',
+    'anxeity': 'anxiety disorders',
+    'anxety': 'anxiety disorders',
+    'axiety': 'anxiety disorders',
+    'arthrtis': 'arthritis',
+    'astham': 'asthma',
+    'balckheads': 'acne',
+    'bronchitus': 'bronchitis',
+    'bronkitis': 'bronchitis',
+    'depprssion': 'depression',
+    'depreesion': 'depression',
+    'depresion': 'depression',
+    'diaheria assc. w': 'diarrhea',
+    'diareaha': 'diarrhea',
+    'diarreah': 'diarrhea',
+    'diarrhoea': 'diarrhea',
+    'eczyma': 'eczema',
+    'exzema of the face': 'eczema',
+    'ezcema': 'eczema',
+    'ezema on my hands': 'eczema',
+    'glacoma': 'glaucoma',
+    'glucoma': 'glaucoma',
+    'headake': 'migraine/headache',
+    'maigrains': 'migraine/headache',
+    'heratburn': 'gerd/heartburn',
+    'hypothroidism': 'hypothyroidism',
+    'hypothryroid': 'hypothyroidism',
+    'hypothyriod': 'hypothyroidism',
+    'hypothyrodism': 'hypothyroidism',
+    'insomia': 'sleep disorders',
+    'insomina': 'sleep disorders',
+    'insommnia': 'sleep disorders',
+    'muslce inflammation': 'muscle inflammation',
+    'tonsilitis': 'respiratory infection',
+    'wieght loss': 'weight management',
+
+    # --- VARIANTI COLESTEROLO (La categoria più sporca) ---
+    'choloesterol': 'high cholesterol',
+    'colestrol': 'high cholesterol',
+    'high chloresteral': 'high cholesterol',
+    'high cholerterol': 'high cholesterol',
+    'high cholesteol': 'high cholesterol',
+    'high cholesteral': 'high cholesterol',
+    'high cholestoral': 'high cholesterol',
+    'high cholestral': 'high cholesterol',
+    'high cholestrol': 'high cholesterol',
+    'high colesteral': 'high cholesterol',
+    'high colesterol': 'high cholesterol',
+    'high colesterol level': 'high cholesterol',
+    'high colestrol': 'high cholesterol',
+    'high colorestoral': 'high cholesterol',
+    'hypercholesteremia': 'high cholesterol',
+    'hypercholestremia': 'high cholesterol',
+
+    # --- VARIANTI PRESSIONE (Hypertension) ---
+    'hbp': 'high blood pressure',
+    'high blood preasure': 'high blood pressure',
+    'high blood pressue --  diuretic': 'high blood pressure',
+    'high blood presure': 'high blood pressure',
+    'high bloodpressure': 'high blood pressure',
+    'hypertention': 'high blood pressure',
+
+    # --- VARIANTI MENTALI/NEURO ---
+    'bi polar': 'bipolar disorder',
+    'bi-polar': 'bipolar disorder',
+    'bi-polar 2': 'bipolar disorder',
+    'bi-polar disorder': 'bipolar disorder',
+    'bipolor disease': 'bipolar disorder',
+    'felt by- polar': 'bipolar disorder',
+    "alzheimer's": "alzheimer's/dementia",
+    "alzheimer's disease": "alzheimer's/dementia",
+    'alzheimers': "alzheimer's/dementia",
+    
+    # --- VARIANTI FISICHE ---
+    'fibro': 'fibromyalgia',
+    'fibro.': 'fibromyalgia',
+    'fibromylgia': 'fibromyalgia',
+    'fybromyalgia': 'fibromyalgia',
+    'anklosing spondylytis': 'spondylitis',
+    'ankylizing spondolitis': 'spondylitis',
+    'ankylosing spondalytis': 'spondylitis',
+    "barret's esophogus": "barrett's esophagus",
+    "barrett's esophagus": "barrett's esophagus",
+    'barretts disease': "barrett's esophagus",
+
+    # --- ALTRI ---
+    'birth prevention': 'birth control',
+    'birthcontrol': 'birth control',
+    'contraception/menstrual': 'birth control',
+    'erectile disfunction': 'erectile dysfunction',
+    'erictile dysfunction': 'erectile dysfunction',
+    'impotence': 'erectile dysfunction',
+    'atrial fib': 'heart rhythm disorder',
+    'atrial fibulation': 'heart rhythm disorder',
+    'atrial frbulation': 'heart rhythm disorder',
+
+    # --- RIMOZIONE RUMORE ---
+    'waited too long to get stmus': 'DELETE',
+    'u': 'DELETE',
+    'upper': 'DELETE',
+    '2': 'DELETE',
+    '75 mg': 'DELETE',
+    '1mg': 'DELETE',
+    'n/a': 'DELETE',
+    'none': 'DELETE',
+    '---': 'DELETE',
+    'a': 'DELETE',
+    'all over': 'DELETE',
+    '1 nerve near mouth during surgery': 'DELETE',
+    '2 broken arms': 'DELETE'
+}
+
+def advanced_standardization(text):
+    if not isinstance(text, str):
+        return text
+    
+    text_clean = text.lower().strip()
+    
+    # 1. Dizionario Diretto
+    if text_clean in extended_map:
+        return extended_map[text_clean]
+    
+    # 2. Regex Patterns (Catch-all)
+    
+    # Acne
+    if re.search(r'acne|pimple|blackhead|whitehead|zit', text_clean):
+        return 'acne'
+        
+    # Hair Loss / Alopecia
+    if re.search(r'alopecia|bald|hair loss|hair thinning|hair regrowth', text_clean):
+        return 'hair loss/alopecia'
+        
+    # Anti-Aging / Wrinkles
+    if re.search(r'aging|wrinkle|fine lines|furrows|facial lines', text_clean):
+        return 'anti-aging/cosmetic'
+        
+    # Weight
+    if re.search(r'weight|obes|fat|pound|kg|diet', text_clean):
+        return 'weight management'
+
+    # Sleep
+    if re.search(r'sleep|insom|wake', text_clean):
+        return 'sleep disorders'
+        
+    # Pain
+    if re.search(r'pain|ache|sore|hurt|cramp|spasm', text_clean):
+        return 'pain (chronic/acute)'
+        
+    # Menopause / Hormonal
+    if re.search(r'menopaus|hot flash|hormon|estrogen|hyster.ctomy', text_clean):
+        return 'menopause/hormonal'
+        
+    # Heart Rhythm
+    if re.search(r'atrial fib|tachycardia|palpitation|arrhythmia', text_clean):
+        return 'heart rhythm disorder'
+        
+    # Infection
+    if re.search(r'infect|bacteri|virus|fung|absces|boil', text_clean):
+        return 'infection (general)'
+        
+    # Spondylitis
+    if re.search(r'spond.l.tis|ankyl.sing', text_clean):
+        return 'spondylitis'
+
+    return text_clean
+
+# --- APPLICAZIONE ---
+print("Applicazione della correzione avanzata (V3)...")
+
+# Applica la funzione
+df_train['condition_standardized_v3'] = df_train['condition_standardized'].apply(advanced_standardization)
+df_test['condition_standardized_v3'] = df_test['condition_standardized'].apply(advanced_standardization)
+
+# Rimozione del rumore (DELETE)
+df_train_v3 = df_train[df_train['condition_standardized_v3'] != 'DELETE']
+df_test_v3 = df_test[df_test['condition_standardized_v3'] != 'DELETE']
+
+# --- REPORT STATISTICO ---
+unique_v2 = len(set(df_train['condition_standardized'].dropna().unique()) | set(df_test['condition_standardized'].dropna().unique()))
+unique_v3 = len(set(df_train_v3['condition_standardized_v3'].dropna().unique()) | set(df_test_v3['condition_standardized_v3'].dropna().unique()))
+
+print(f"Condizioni uniche INIZIALI: {unique_v2}")
+print(f"Condizioni uniche FINALI:   {unique_v3}")
+print(f"Riduzione: -{unique_v2 - unique_v3} categorie")
+
+print("\nTop 20 Condizioni Finali (V3):")
+print(df_train_v3['condition_standardized_v3'].value_counts().head(20))
+
+# Save
+output_train = 'drugLibTrain_final_v3.tsv'
+output_test = 'drugLibTest_final_v3.tsv'
+df_train_v3.to_csv(output_train, index=False, sep='\t')
+df_test_v3.to_csv(output_test, index=False, sep='\t')
+print(f"\nFile salvati come: {output_train}, {output_test}")
