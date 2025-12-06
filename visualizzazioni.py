@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+import numpy as np
 
 # Caricamento dati - dataset gia' normalizzati 
 train = pd.read_csv("drugLibTrain_final_v4.tsv", sep="\t")
@@ -55,16 +56,15 @@ effect_map_inv = {v: k for k, v in effect_map.items()}
 side_map_inv = {v: k for k, v in side_map.items()}
 
 # Funzione per istogramma 
-def nice_hist(variable, title, bins=10, color="#c5b3e6", show_mean=True):
+def nice_hist(variable, title, bins=10, color="#c5b3e6", show_mean=True, max_freq=None):
     plt.figure(figsize=(9,5))
 
     discrete_vars = ["effectiveness_num", "sideEffects_num"]
 
-    # Se è una variabile discreta → bar plot orizzontale
     if variable in discrete_vars:
         counts = df[variable].value_counts().sort_index()
         y_pos = range(len(counts))
-        
+
         # Etichette leggibili
         if variable == "effectiveness_num":
             labels = [effect_map_inv[i] for i in counts.index]
@@ -72,28 +72,28 @@ def nice_hist(variable, title, bins=10, color="#c5b3e6", show_mean=True):
             labels = [side_map_inv[i].replace(" Side Effects", "") for i in counts.index]
 
         # Trova la barra con frequenza maggiore
-        max_val = counts.max()
+        max_val = counts.max() if max_freq is None else max_freq
 
-        # Colori: default per tutte, speciale per la più grande
+        # Colori: barra più grande evidenziata
         bar_colors = [
-            "#7b59c3" if val == max_val else color
+            "#7b59c3" if val == counts.max() else color
             for val in counts.values
         ]
 
         # Disegno del bar plot
         plt.barh(y_pos, counts.values, color=bar_colors,
                  edgecolor="white", alpha=0.9)
-
         plt.yticks(y_pos, labels)
         plt.xlabel("Frequenza")
+        plt.xlim(0, max_val)  # scala X uguale per tutti se impostato max_val
         plt.ylabel("")
 
-    # Istogramma del rating
-    elif variable == "rating":
-        sns.histplot(df[variable], bins=bins, color=color,
-                     edgecolor="white", alpha=0.75)
-        plt.xticks(range(1, 11))
+    elif variable == "rating":  
+        # bins centrati sugli interi da 1 a 10
+        bins = np.arange(0.5, 10.6, 1)  # da 0.5 a 10.5 per centrare le barre sugli interi
 
+        sns.histplot(df["rating"], bins=bins, color="#c5b3e6", edgecolor="white", alpha=0.75)
+        plt.xticks(range(1, 11))
         if show_mean:
             mean_val = df[variable].mean()
             plt.axvline(mean_val, color="red", linestyle="--", linewidth=1.8)
@@ -101,11 +101,8 @@ def nice_hist(variable, title, bins=10, color="#c5b3e6", show_mean=True):
                      plt.gca().get_ylim()[1] * 0.9,
                      f"Media = {mean_val:.2f}",
                      color="red", fontsize=10)
-
         plt.xlabel("")
         plt.ylabel("Frequenza")
-
-    # Istogrammi generici
     else:
         sns.histplot(df[variable], bins=bins, color=color,
                      edgecolor="white", alpha=0.75)
@@ -121,11 +118,13 @@ def nice_hist(variable, title, bins=10, color="#c5b3e6", show_mean=True):
 # Rating - istogramma 
 nice_hist("rating", "Distribuzione del Rating", bins=10, show_mean=True)
 
-# Effectiveness - bar plot orizzontale
-nice_hist("effectiveness_num", "Distribuzione dell'Effectiveness", bins=5, show_mean=False)
+# Determina il massimo tra le due distribuzioni
+max_count = max(df["effectiveness_num"].value_counts().max(),
+                df["sideEffects_num"].value_counts().max())
 
-# Side Effects - bar plot orizzontale con etichette pulite
-nice_hist("sideEffects_num", "Distribuzione dei Side Effects", bins=5, show_mean=False)
+# Plotta con la stessa scala
+nice_hist("effectiveness_num", "Distribuzione dell'Effectiveness", max_freq=max_count, show_mean=False)
+nice_hist("sideEffects_num", "Distribuzione dei Side Effects", max_freq=max_count, show_mean=False)
 
 ## b. Frequenza delle condizioni standardizzate
 # v1.2 -- e se facessi anche qui lolli pop?
