@@ -1,4 +1,4 @@
-# Progetto-Percezioni  
+# Progetto percezioni - Drug Reviews  
 
 Analisi del dataset *Drug Reviews* nell’ambito del corso “Principi e modelli della percezione”.  
 Include script Python per la pulizia e l’esplorazione dei dati, visualizzazioni, analisi avanzate con clustering e [aspetto MIKE per la sua parte ].  
@@ -29,8 +29,7 @@ Progetto-Percezioni/
 
 1. Clona il repository:  
    ```bash
-   git clone https://github.com/imNNastya/Progetto-Percezioni.git
-````
+   git clone https://github.com/imNNastya/Progetto-Percezioni.git```
 
 2. Assicurati di avere le dipendenze necessarie (es. pandas, seaborn, matplotlib, scikit-learn).
 3. Esegui `visualizzazioni.py` per generare i grafici esplorativi.
