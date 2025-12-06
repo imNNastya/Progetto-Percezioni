@@ -5,7 +5,7 @@ Include script Python per la pulizia e l’esplorazione dei dati, visualizzazion
 
 ## 🔍 Obiettivi  
 
-- Effettuare una **pulizia e preprocessamento** del dataset (encoding di variabili, fusione train/test).  
+- Effettuare una **pulizia e preproccesing** del dataset (encoding di variabili, fusione train/test ...).  
 - Realizzare **analisi esplorativa dei dati (EDA)** per comprendere le distribuzioni, relazioni e pattern.  
 - Utilizzare tecniche di **visualizzazione** per dare evidenza a distribuzioni, correlazioni, frequenze e comparazioni tra condizioni/farmaci.  
 - Applicare un **rating corretto** tramite il metodo Bayesian Rating per riequilibrare l’impatto di farmaci con molte o poche recensioni.  
