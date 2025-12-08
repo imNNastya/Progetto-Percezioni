@@ -103,3 +103,4 @@ plt.axvline(x=-0.45, color='grey', linestyle='--', alpha=0.3)
 plt.legend(bbox_to_anchor=(1.01, 1), loc='upper left')
 plt.tight_layout()
 plt.savefig('viz1_mappa_tolleranza.png', dpi=300)
+
