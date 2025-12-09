@@ -24,7 +24,7 @@ Questo progetto analizza il **Drug Review Dataset** di Druglib.com come parte de
 ## Contenuti principali
 
 * Grafici della distribuzione di variabili come rating, efficacia, effetti collaterali.
-* Analisi della frequenza delle condizioni mediche tramite bar-plot e lollipop-plot.
+* Analisi della frequenza delle condizioni mediche tramite lollipop-plot.
 * Box-plot per confrontare la distribuzione del rating tra le condizioni più comuni.
 * Heatmap delle correlazioni tra variabili numeriche.
 * Ranking dei farmaci per condizione usando **Bayesian Rating** per mitigare il bias derivante dal numero differente di recensioni.
