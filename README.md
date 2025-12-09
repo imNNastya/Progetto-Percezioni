@@ -29,14 +29,7 @@ Questo progetto analizza il **Drug Review Dataset** di Druglib.com come parte de
 * Heatmap delle correlazioni tra variabili numeriche.
 * Ranking dei farmaci per condizione usando **Bayesian Rating** per mitigare il bias derivante dal numero differente di recensioni.
 * Risultati di clustering con diversi algoritmi per raggruppare farmaci con caratteristiche simili.
-
----
-
-## Motivazione e obiettivi
-
-* Comprendere come tecniche di **clustering** possano estrarre pattern da dati testuali.
-* Studiare rappresentazioni visive di risultati complessi per facilitare l’interpretazione di sentiment, tendenze e strutture latenti.
-* Sviluppare competenze pratiche nell’uso di librerie Python per **data science**, **visualizzazione** e **machine learning**.
+* Sviluppo di modelli predittivi per stimare il rating degli utenti basandosi sulle variabili presenti nel dataset.
 
 ---
 
