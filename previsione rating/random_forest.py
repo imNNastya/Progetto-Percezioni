@@ -5,22 +5,17 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import r2_score, mean_squared_error
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
-# 1. CARICAMENTO E PREPROCESSING DATI
-input_train_name = 'drugLibTrain_final_v4.tsv'
-input_test_name = 'drugLibTest_final_v4.tsv'
+# Path assoluto della root del progetto (cartella sopra allo script)
+ROOT = os.path.dirname(os.path.dirname(__file__))  
 
-try:
-    df_train = pd.read_csv(input_train_name, sep='\t')
-    df_test = pd.read_csv(input_test_name, sep='\t')
-except FileNotFoundError:
-    try:
-        # Fallback se non trova il file v3, prova con quello pulito o raw
-        df_train = pd.read_csv('drugLibTrain_final_clean.tsv', sep='\t')
-        df_test = pd.read_csv('drugLibTest_final_clean.tsv', sep='\t')
-    except:
-        print("Errore critico: File non trovati.")
-        exit()
+# Cartella data
+DATA = os.path.join(ROOT, "data")
+
+# Caricamento dataset
+input_train_name = pd.read_csv(os.path.join(DATA, "drugLibTrain_final_v4.tsv"), sep="\t")
+input_test_name  = pd.read_csv(os.path.join(DATA, "drugLibTest_final_v4.tsv"), sep="\t")
 
 # Gestione colonna condizione
 cond_col = 'condition_standardized_v3'
@@ -136,4 +131,5 @@ plt.legend()
 plt.tight_layout()
 plt.savefig('viz_perf_residuals.png', dpi=300)
 print("Salvato: viz_perf_residuals.png")
+
 
