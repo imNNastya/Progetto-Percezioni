@@ -78,7 +78,7 @@ extended_map = {
     # --- VARIANTI PRESSIONE (Hypertension) ---
     'hbp': 'high blood pressure',
     'high blood preasure': 'high blood pressure',
-    'high blood pressue --  diuretic': 'high blood pressure',
+    'high blood pressue --  diuretic': 'high blood pressure',
     'high blood presure': 'high blood pressure',
     'high bloodpressure': 'high blood pressure',
     'hypertention': 'high blood pressure',
@@ -190,28 +190,33 @@ def advanced_standardization(text):
 # --- APPLICAZIONE ---
 print("Applicazione della correzione avanzata (V3)...")
 
-# Applica la funzione
-df_train['condition_standardized_v3'] = df_train['condition_standardized'].apply(advanced_standardization)
-df_test['condition_standardized_v3'] = df_test['condition_standardized'].apply(advanced_standardization)
+# MODIFICA QUI: Assegna il risultato a 'condition_standardized' invece di 'condition_standardized_v3'
+df_train['condition_standardized'] = df_train['condition_standardized'].apply(advanced_standardization)
+df_test['condition_standardized'] = df_test['condition_standardized'].apply(advanced_standardization)
 
 # Rimozione del rumore (DELETE)
-df_train_v3 = df_train[df_train['condition_standardized_v3'] != 'DELETE']
-df_test_v3 = df_test[df_test['condition_standardized_v3'] != 'DELETE']
+# NOTA: Qui si usa ancora il suffisso "_v3" per mantenere i nomi delle variabili per la pulizia del rumore
+# Tuttavia, la colonna di riferimento è stata rinominata sopra.
+df_train_v3 = df_train[df_train['condition_standardized'] != 'DELETE'].copy() # Usa .copy() per evitare SettingWithCopyWarning
+df_test_v3 = df_test[df_test['condition_standardized'] != 'DELETE'].copy()
 
 # --- REPORT STATISTICO ---
+# NOTA: Per le statistiche, ora si fa riferimento alla colonna rinominata.
 unique_v2 = len(set(df_train['condition_standardized'].dropna().unique()) | set(df_test['condition_standardized'].dropna().unique()))
-unique_v3 = len(set(df_train_v3['condition_standardized_v3'].dropna().unique()) | set(df_test_v3['condition_standardized_v3'].dropna().unique()))
+# Dopo l'applicazione della funzione, 'condition_standardized' contiene i dati finali (che prima erano in v3)
+unique_v3 = len(set(df_train_v3['condition_standardized'].dropna().unique()) | set(df_test_v3['condition_standardized'].dropna().unique()))
 
 print(f"Condizioni uniche INIZIALI: {unique_v2}")
-print(f"Condizioni uniche FINALI:   {unique_v3}")
+print(f"Condizioni uniche FINALI:    {unique_v3}")
 print(f"Riduzione: -{unique_v2 - unique_v3} categorie")
 
-print("\nTop 20 Condizioni Finali (V3):")
-print(df_train_v3['condition_standardized_v3'].value_counts().head(20))
+print("\nTop 20 Condizioni Finali (Standardizzate):")
+print(df_train_v3['condition_standardized'].value_counts().head(20))
 
 # Save
 output_train = 'drugLibTrain_final_v3.tsv'
 output_test = 'drugLibTest_final_v3.tsv'
 df_train_v3.to_csv(output_train, index=False, sep='\t')
 df_test_v3.to_csv(output_test, index=False, sep='\t')
+
 print(f"\nFile salvati come: {output_train}, {output_test}")
