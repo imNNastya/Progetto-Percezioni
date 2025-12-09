@@ -14,8 +14,8 @@ ROOT = os.path.dirname(os.path.dirname(__file__))
 DATA = os.path.join(ROOT, "data")
 
 # Caricamento dataset
-input_train_name = pd.read_csv(os.path.join(DATA, "drugLibTrain_final_v4.tsv"), sep="\t")
-input_test_name  = pd.read_csv(os.path.join(DATA, "drugLibTest_final_v4.tsv"), sep="\t")
+df_train = pd.read_csv(os.path.join(DATA, "drugLibTrain_final_v4.tsv"), sep="\t")
+df_test  = pd.read_csv(os.path.join(DATA, "drugLibTest_final_v4.tsv"), sep="\t")
 
 # Gestione colonna condizione
 cond_col = 'condition_standardized_v3'
@@ -131,5 +131,6 @@ plt.legend()
 plt.tight_layout()
 plt.savefig('viz_perf_residuals.png', dpi=300)
 print("Salvato: viz_perf_residuals.png")
+
 
 
