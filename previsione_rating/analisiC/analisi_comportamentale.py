@@ -4,16 +4,14 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
+# ROOT = cartella principale del progetto (Progetto-Percezioni-main-4)
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
-# Path assoluto della root del progetto (cartella sopra allo script)
-ROOT = os.path.dirname(os.path.dirname(__file__))  
-
-# Cartella data
 DATA = os.path.join(ROOT, "data")
 
-# Caricamento dataset
 df_train = pd.read_csv(os.path.join(DATA, "drugLibTrain_final_v4.tsv"), sep="\t")
 df_test  = pd.read_csv(os.path.join(DATA, "drugLibTest_final_v4.tsv"), sep="\t")
+
 
 # Concatenazione per massima statistica
 df = pd.concat([df_train, df_test], ignore_index=True)
