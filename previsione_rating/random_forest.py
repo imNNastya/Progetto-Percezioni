@@ -2,28 +2,21 @@ import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import r2_score, mean_squared_error
-import matplotlib.pyplot as plt
-import seaborn as sns
+from sklearn.metrics import mean_squared_error, r2_score
 import os
 
-# Path assoluto della root del progetto (cartella sopra allo script)
-ROOT = os.path.dirname(os.path.dirname(__file__))  
+# ROOT = cartella principale del progetto (Progetto-Percezioni-main)
+ROOT = os.path.dirname(os.path.dirname(__file__))
 
-# Cartella data
 DATA = os.path.join(ROOT, "data")
 
-# Caricamento dataset
 df_train = pd.read_csv(os.path.join(DATA, "drugLibTrain_final_v4.tsv"), sep="\t")
 df_test  = pd.read_csv(os.path.join(DATA, "drugLibTest_final_v4.tsv"), sep="\t")
 
 # Gestione colonna condizione
 cond_col = 'condition_standardized_v3'
 if cond_col not in df_train.columns:
-    if 'condition_standardized' in df_train.columns:
-        cond_col = 'condition_standardized'
-    else:
-        cond_col = 'condition' 
+    cond_col = 'condition_standardized'
 
 # Mappings Ordinali
 eff_map = {
@@ -55,82 +48,52 @@ train_clean['cond_encoded'] = le.transform(train_clean[cond_col].astype(str))
 test_clean['cond_encoded'] = le.transform(test_clean[cond_col].astype(str))
 
 
-# 2. FASE DI TRAINING E PREDITTIVA
+# 2. FASE DI TRAINING
 features = ['eff_score', 'side_score', 'cond_encoded']
 target = 'rating'
 
-rf = RandomForestRegressor(n_estimators=100, random_state=42, max_depth=10)
-rf.fit(train_clean[features], train_clean[target])
-preds = rf.predict(test_clean[features]) # Predizione sul Test Set
-actuals = test_clean[target]
-residuals = actuals - preds
-r2 = r2_score(actuals, preds)
-
-
-# 3. CALCOLO E ASSEGNAZIONE DEI PROFILI DI TOLLERANZA (per i colori)
-# Usiamo il Train Set per definire i cluster (correlazione)
-condition_stats = train_clean.groupby(cond_col).filter(lambda x: len(x) >= 5)
-profile_map = {}
-
-for cond, data in condition_stats.groupby(cond_col):
-    correlation = data['side_score'].corr(data['rating'])
-    
-    if pd.isna(correlation):
-        profile = 'Neutri'
-    elif correlation < -0.75: # Bassa Tolleranza
-        profile = 'Intolleranti'
-    elif correlation > -0.45: # Alta Tolleranza
-        profile = 'Stoici'
-    else:
-        profile = 'Neutri'
-    
-    profile_map[cond] = profile
-
-# Applichiamo i profili al Test Set per colorare il grafico
-test_clean['Profilo'] = test_clean[cond_col].map(profile_map).fillna('Neutri')
-
-
-# 4. GENERAZIONE GRAFICI DI PERFORMANCE (COLORATI)
-custom_palette = {'Intolleranti': '#e74c3c', 'Neutri': '#f1c40f', 'Stoici': '#2ecc71'}
-
-# --- GRAFICO 1: SCATTERPLOT ACTUAL VS PREDICTED (COLORATO) ---
-plt.figure(figsize=(10, 8))
-sns.set_style("whitegrid")
-
-sns.scatterplot(
-    x=actuals, 
-    y=preds,
-    hue=test_clean['Profilo'], # Colore basato sul profilo
-    palette=custom_palette,
-    alpha=0.6,
-    edgecolor='w',
-    s=80
+rf = RandomForestRegressor(
+    n_estimators=100,
+    random_state=42,
+    max_depth=10
 )
 
-plt.plot([1, 10], [1, 10], color='black', linestyle='--', linewidth=1.5, label='Predizione Perfetta')
-plt.title(f'1. Performance Predittiva per Profilo di Tolleranza (R²={r2:.2f})', fontsize=14, fontweight='bold')
-plt.xlabel('Voto Reale (Paziente)', fontsize=12)
-plt.ylabel('Voto Predetto (Random Forest)', fontsize=12)
-plt.xlim(0.5, 10.5)
-plt.ylim(0.5, 10.5)
-plt.legend(title='Profilo Paziente')
-plt.tight_layout()
-plt.savefig('viz_perf_actual_vs_pred_profiled.png', dpi=300)
-print("Grafico 1 salvato: viz_perf_actual_vs_pred_profiled.png")
-
-# PLOT B: DISTRIBUZIONE DEGLI ERRORI (Residui)
-plt.figure(figsize=(10, 6))
-sns.histplot(residuals, bins=30, kde=True, color='#3498db', edgecolor='black')
-
-plt.axvline(x=0, color='#e74c3c', linestyle='--', linewidth=2, label='Errore Zero')
-
-plt.title('Distribuzione degli Errori di Predizione (Residui)', fontsize=14, fontweight='bold')
-plt.xlabel('Errore (Voto Reale - Voto Predetto)', fontsize=12)
-plt.ylabel('Numero di Predizioni', fontsize=12)
-plt.legend()
-plt.tight_layout()
-plt.savefig('viz_perf_residuals.png', dpi=300)
-print("Salvato: viz_perf_residuals.png")
+rf.fit(train_clean[features], train_clean[target])
 
 
+# 3. FASE DI TESTING E VALIDAZIONE
+preds = rf.predict(test_clean[features])
 
+# Calcolo metriche
+rmse = np.sqrt(mean_squared_error(test_clean[target], preds))
+r2 = r2_score(test_clean[target], preds)
+
+# Feature Importance
+importances = rf.feature_importances_
+feature_names = ['Efficacia', 'Effetti Collaterali', 'Condizione']
+imp_df = pd.DataFrame({'Feature': feature_names, 'Importance': importances})
+
+
+# --- CREAZIONE TABELLA OUTPUT RICHIESTA ---
+results_table = pd.DataFrame({
+    'Condizione': test_clean[cond_col],
+    'Voto Reale': test_clean[target],
+    'Voto Predetto': preds,
+    'Errore': test_clean[target] - preds
+})
+
+# 4. REPORT E OUTPUT FINALE
+print("\n--- RISULTATI ALGORITMO RANDOM FOREST REGRESSOR ---")
+print("1. Performance (Test Set - Validazione):")
+print(f"RMSE (Errore Medio Assoluto): {rmse:.4f}")
+print(f"R2 (Affidabilità del Modello): {r2:.4f}")
+
+print("\n2. Importanza delle Features:")
+print(imp_df.sort_values('Importance', ascending=False))
+
+print("\n3. Dettaglio Predizioni (Prime 10 righe):")
+print(results_table.head(10).to_string(index=False))
+
+# Opzionale: Salvare in CSV per analisi completa
+results_table.to_csv('rf_predictions_detail.csv', index=False)
+print("\nTabella completa salvata in 'rf_predictions_detail.csv'")
