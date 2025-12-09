@@ -1,15 +1,14 @@
-````markdown
-# Progetto-Percezioni 🎯
+# Progetto Drug reviews (Druglib.com) 
 
 **Corso:** Principi e modelli della percezione  
-**Autori:** imNNastya, ynwMike Mychael Fokou, cami160  
+**Autori:** Anastasiya Kozemko, Mychael Fokou, Camilla Moretti, Gift Aighobahi  
 
 ---
 
 ## 🔎 Descrizione
 
-Questo progetto analizza il dataset *Drug reviews* per studiare modelli di percezione del testo, applicando tecniche di clustering e visualizzazione.  
-Il codice è scritto in Python e comprende script per il preprocessing, il clustering dei dati e la generazione di visualizzazioni. L’obiettivo è esplorare come opinioni, valutazioni e caratteristiche del testo possono essere interpretate e rappresentate visivamente.
+Questo progetto analizza il dataset *Drug reviews* applicando tecniche di clustering e visualizzazione e machine learning.  
+Il codice è scritto in Python e comprende script per il preprocessing, il clustering dei dati, regressione e la generazione di visualizzazioni. L’obiettivo è esplorare come valutazioni e caratteristiche dei farmaci possono essere interpretate e rappresentate visivamente.
 
 ---
 
