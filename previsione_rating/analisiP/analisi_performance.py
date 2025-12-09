@@ -7,15 +7,15 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-# Path assoluto della root del progetto (cartella sopra allo script)
-ROOT = os.path.dirname(os.path.dirname(__file__))  
 
-# Cartella data
+# ROOT = cartella principale del progetto (Progetto-Percezioni-main)
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+
 DATA = os.path.join(ROOT, "data")
 
-# Caricamento dataset
 df_train = pd.read_csv(os.path.join(DATA, "drugLibTrain_final_v4.tsv"), sep="\t")
 df_test  = pd.read_csv(os.path.join(DATA, "drugLibTest_final_v4.tsv"), sep="\t")
+
 
 # Gestione colonna condizione
 cond_col = 'condition_standardized_v3'
