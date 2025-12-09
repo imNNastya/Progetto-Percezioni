@@ -1,22 +1,25 @@
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-from kmodes.kprototypes import KPrototypes
+import pandas as pd #Gestione e manipolazione dei dati in formato tabellare (DataFrame), cioè leggere CSV/TSV (pd.read_csv), raggruppare dati (groupby), aggregazioni (agg), unire DataFrame (concat).
+import seaborn as sns #usata per la palette di colori (sns.color_palette).
+import matplotlib.pyplot as plt #Libreria base per creare grafici
+from sklearn.preprocessing import StandardScaler #Serve a standardizzare le feature numeriche, Essenziale prima di clustering o PCA per evitare che scale diverse dominino i risultati.
+from sklearn.decomposition import PCA #Riduzione della dimensionalità dei dati numerici. lo usi per trasformare dati multi-dimensionali in 2 componenti principali (PC1 e PC2), così puoi fare scatter plot.
+from kmodes.kprototypes import KPrototypes 
 from sklearn.cluster import AgglomerativeClustering
-from scipy.cluster.hierarchy import dendrogram, linkage
-import os
+from scipy.cluster.hierarchy import dendrogram, linkage #linkage: calcola le distanze tra i cluster (usato per il dendrogramma). dendrogram: visualizza la gerarchia dei cluster sotto forma di albero.
+import numpy as np # Importato per le operazioni numeriche
+
+#rating_mean -> media del rating del farmaco
+#rating_std -> variabilità del rating (quanto i voti sono diversi tra loro)
+#n_reviews -> numero di recensioni del farmaco
+#eff_count -> quante recensioni riportano l’attributo “effectiveness”
 
 # =========================
-# 1. Caricamento dati
+# 1. Caricamento dati. 
 # =========================
-ROOT = os.path.dirname(os.path.dirname(__file__))
-DATA = os.path.join(ROOT, "data")
-
-train = pd.read_csv(os.path.join(DATA, "drugLibTrain_final_v4.tsv"), sep="\t")
-test  = pd.read_csv(os.path.join(DATA, "drugLibTest_final_v4.tsv"), sep="\t")
-df = pd.concat([train, test], ignore_index=True)
+#Leggi i dati TSV (tab-separated values) di train e test
+train = pd.read_csv("drugLibTrain_final_v4.tsv", sep="\t")
+test = pd.read_csv("drugLibTest_final_v4.tsv", sep="\t")
+df = pd.concat([train, test], ignore_index=True) #pd.concat li unisce in un unico DataFrame (df).
 
 # =========================
 # 2. Filtra per condizione
@@ -104,16 +107,22 @@ cluster_df["KPrototypes"] = kproto.fit_predict(X_features.to_numpy(), categorica
 # 8. PCA 2D per visualizzazione
 # =========================
 pca = PCA(n_components=2)
-cluster_df[["PC1", "PC2"]] = pca.fit_transform(X_features.iloc[:, :-1])
+cluster_df[["Successo Complessivo del Farmaco", "Accordo/Disaccordo degli Utenti"]] = pca.fit_transform(X_features.iloc[:, :-1])
 
+# Nomi personalizzati dei cluster
+cluster_names = {
+    0: "Top",
+    1: "Medio",
+    2: "Basso"
+}
 plt.figure(figsize=(10, 6))
 palette = sns.color_palette("Set1", n_colors=k)
 for label in range(k):
     subset = cluster_df[cluster_df["KPrototypes"] == label]
-    plt.scatter(subset["PC1"], subset["PC2"], s=subset["n_reviews"]*5, label=f'Cluster {label}')
+    plt.scatter(subset["Successo Complessivo del Farmaco"], subset["Accordo/Disaccordo degli Utenti"], s=subset["n_reviews"]*5, label=cluster_names[label]) 
 plt.title(f"K-Prototypes Clustering – {condition}")
-plt.xlabel("PC1")
-plt.ylabel("PC2")
+plt.xlabel("Successo Complessivo del Farmaco")
+plt.ylabel("Accordo/Disaccordo degli Utenti")
 plt.legend()
 plt.grid(True, linestyle="--", alpha=0.3)
 plt.show()
@@ -124,13 +133,19 @@ plt.show()
 agglo = AgglomerativeClustering(n_clusters=k)
 cluster_df["Agglo"] = agglo.fit_predict(X_scaled)
 
+cluster_names = {
+    0: "Top",
+    1: "Basso",
+    2: "Medio"
+}
+
 plt.figure(figsize=(10, 6))
 for label in range(k):
     subset = cluster_df[cluster_df["Agglo"] == label]
-    plt.scatter(subset["PC1"], subset["PC2"], s=subset["n_reviews"]*5, label=f'Cluster {label}')
+    plt.scatter(subset["Successo Complessivo del Farmaco"], subset["Accordo/Disaccordo degli Utenti"], s=subset["n_reviews"]*5, label=cluster_names[label])
 plt.title(f"Agglomerative Clustering – {condition}")
-plt.xlabel("PC1")
-plt.ylabel("PC2")
+plt.xlabel("Successo Complessivo del Farmaco")
+plt.ylabel("Accordo/Disaccordo degli Utenti")
 plt.legend()
 plt.grid(True, linestyle="--", alpha=0.3)
 plt.show()
