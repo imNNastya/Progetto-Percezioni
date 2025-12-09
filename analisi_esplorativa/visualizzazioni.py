@@ -4,11 +4,19 @@ import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 import numpy as np
+import os
 
-# Caricamento dati - dataset gia' normalizzati 
-train = pd.read_csv("drugLibTrain_final_v4.tsv", sep="\t")
-test = pd.read_csv("drugLibTest_final_v4.tsv", sep="\t")
-# unisce per EDA e Clustering, non usare per ML
+# Path assoluto della root del progetto (cartella sopra allo script)
+ROOT = os.path.dirname(os.path.dirname(__file__))  
+
+# Cartella data
+DATA = os.path.join(ROOT, "data")
+
+# Caricamento dataset
+train = pd.read_csv(os.path.join(DATA, "drugLibTrain_final_v4.tsv"), sep="\t")
+test  = pd.read_csv(os.path.join(DATA, "drugLibTest_final_v4.tsv"), sep="\t")
+
+# unisce per EDA
 df = pd.concat([train, test], ignore_index=True) 
 
 # creazione delle mappe per convertire valori text in numerici per analisi 
