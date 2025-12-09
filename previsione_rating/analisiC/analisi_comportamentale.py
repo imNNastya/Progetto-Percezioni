@@ -2,19 +2,18 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
-# 1. Caricamento Dati ROBUSTO (combinando train e test per un'analisi completa)
-try:
-    df_train = pd.read_csv('drugLibTrain_final_v3.tsv', sep='\t')
-    df_test = pd.read_csv('drugLibTest_final_v3.tsv', sep='\t')
-except FileNotFoundError:
-    try:
-        # Fallback se non trova il file v3, prova con quello pulito o raw
-        df_train = pd.read_csv('drugLibTrain_final_clean.tsv', sep='\t')
-        df_test = pd.read_csv('drugLibTest_final_clean.tsv', sep='\t')
-    except:
-        df_train = pd.read_csv('drugLibTrain_raw.tsv', sep='\t')
-        df_test = pd.read_csv('drugLibTest_raw.tsv', sep='\t')
+
+# Path assoluto della root del progetto (cartella sopra allo script)
+ROOT = os.path.dirname(os.path.dirname(__file__))  
+
+# Cartella data
+DATA = os.path.join(ROOT, "data")
+
+# Caricamento dataset
+df_train = pd.read_csv(os.path.join(DATA, "drugLibTrain_final_v4.tsv"), sep="\t")
+df_test  = pd.read_csv(os.path.join(DATA, "drugLibTest_final_v4.tsv"), sep="\t")
 
 # Concatenazione per massima statistica
 df = pd.concat([df_train, df_test], ignore_index=True)
@@ -103,4 +102,5 @@ plt.axvline(x=-0.45, color='grey', linestyle='--', alpha=0.3)
 plt.legend(bbox_to_anchor=(1.01, 1), loc='upper left')
 plt.tight_layout()
 plt.savefig('viz1_mappa_tolleranza.png', dpi=300)
+
 
