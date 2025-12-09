@@ -14,11 +14,11 @@ Il codice è scritto in Python e comprende script per il preprocessing, il clust
 
 ## 📂 Struttura del repo
 
-- `drugLibTrain_final_v4.tsv`, `drugLibTest_final_v4.tsv` — dataset utilizzato per training e test  
-- `Clustering.py` — script per eseguire l’algoritmo di clustering sui dati  
-- `visualizzazioni.py` — script per generare grafici/plot che aiutano a interpretare i risultati  
-- Altri file di supporto / versioni intermedie del dataset  
-
+- `drugLibTrain_final_v4.tsv`, `drugLibTest_final_v4.tsv` — dataset utilizzato per training e test
+- `analisi_esplorativa/` - cartella che contiene script per generare grafici/plot che aiutano a interpretare i risultati 
+- `clustering` — cartella che contiene script per eseguire l’algoritmo di clustering sui dati con le sue visualizzazioni
+- `previsione rating/` — cartella che contiene la logica per la parte di rating (rielaborazione / previsione / normalizzazione dei rating originali)  
+- `pulizia_dataset` - cartella che contiene la logica per la pulizia e pre processing del dataset
 ---
 
 ## 🚀 Come eseguire il progetto
