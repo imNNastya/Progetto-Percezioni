@@ -1,40 +1,76 @@
-# Progetto Drug reviews (Druglib.com) 
-
-**Corso:** Principi e modelli della percezione  
-**Autori:** Anastasiya Kozemko, Mychael Fokou, Camilla Moretti, Gift Aighobahi  
+Ecco un README completo e adatto a un progetto universitario basato sulla tua repo:
 
 ---
 
-## 🔎 Descrizione
- 
-Questo progetto si occupa dell’analisi di un dataset reale — il Drug Review Dataset — come parte dell’esame del corso “Principi e modelli della percezione”. L’obiettivo è analizzare le percezioni degli utenti (recensioni) sui farmaci: valutazioni, effetti collaterali, condizioni mediche associate, ecc. 
+# Progetto Drug Reviews (Druglib.com)
+
+**Corso:** Principi e modelli della percezione
+**Autori:** Anastasiya Kozemko, Mychael Fokou, Camilla Moretti, Gift Aighobahi
 
 ---
 
-## 📂 Struttura del repo
+## Descrizione
 
-- `drugLibTrain_final_v4.tsv`, `drugLibTest_final_v4.tsv` — dataset utilizzato per training e test
-- `analisi_esplorativa/` - cartella che contiene script per generare grafici/plot che aiutano a interpretare i risultati 
-- `clustering/` — cartella che contiene script per eseguire l’algoritmo di clustering sui dati con le sue visualizzazioni
-- `previsione rating/` — cartella che contiene la logica per la parte di rating (rielaborazione / previsione / normalizzazione dei rating originali)  
-- `pulizia_dataset/` - cartella che contiene la logica per la pulizia e pre processing del dataset
-- ... [ finisci a fine riunione )
----
-## 📊 Cosa troverai  
-- Grafici che mostrano la distribuzione di variabili come rating, efficacia, effetti collaterali. 
-- Analisi della frequenza delle condizioni mediche (“condition_standardized”) tramite bar-plot / lollipop-plot. 
-- Box-plot per confrontare la distribuzione del rating tra le top condizioni mediche più comuni. 
-- Heatmap delle correlazioni tra variabili numeriche. 
-- Ranking di farmaci per condizione (usando Bayesian Rating) per mitigare bias da differente numero di recensioni. 
-- Risultati di clustering (diversi algoritmi) per raggruppare farmaci 
-- PERCHE LA PARTE DI MIKE NON LA PRENDE 
----
-
-## 💡 Motivazione e obiettivi
-
-* Comprendere come tecniche di clustering possano aiutare a estrarre pattern da dati testuali (recensioni, opinioni, feedback).
-* Studiare come rappresentare visivamente risultati complessi per facilitare l’interpretazione e l’analisi di sentiment, tendenze e strutture latenti nei dati.
-* Sviluppare competenze pratiche nell’utilizzo di librerie Python per data science e visualizzazione, consolidando concetti affrontati nel corso “Principi e modelli della percezione”.
+Questo progetto analizza il **Drug Review Dataset** di Druglib.com come parte dell’esame del corso “Principi e modelli della percezione”. L’obiettivo è studiare le percezioni degli utenti sui farmaci tramite recensioni, valutazioni, effetti collaterali e condizioni mediche associate, con approcci di **data analysis**, **clustering** e **previsione dei rating**.
 
 ---
-```
+
+## Struttura del repository
+
+* `drugLibTrain_final_v4.tsv`, `drugLibTest_final_v4.tsv` — dataset per training e test.
+* `pulizia_dataset/` — script per la pulizia e il preprocessing dei dati.
+* `analisi_esplorativa/` — script per visualizzazioni e analisi dei dati (distribuzioni, box-plot, heatmap, ecc.).
+* `clustering/` — script per applicare algoritmi di clustering sui dati e visualizzare i gruppi.
+* `previsione rating/` — script per rielaborazione, normalizzazione e previsione dei rating originali.
+
+---
+
+## Contenuti principali
+
+* Grafici della distribuzione di variabili come rating, efficacia, effetti collaterali.
+* Analisi della frequenza delle condizioni mediche tramite bar-plot e lollipop-plot.
+* Box-plot per confrontare la distribuzione del rating tra le condizioni più comuni.
+* Heatmap delle correlazioni tra variabili numeriche.
+* Ranking dei farmaci per condizione usando **Bayesian Rating** per mitigare il bias derivante dal numero differente di recensioni.
+* Risultati di clustering con diversi algoritmi per raggruppare farmaci con caratteristiche simili.
+
+---
+
+## Motivazione e obiettivi
+
+* Comprendere come tecniche di **clustering** possano estrarre pattern da dati testuali.
+* Studiare rappresentazioni visive di risultati complessi per facilitare l’interpretazione di sentiment, tendenze e strutture latenti.
+* Sviluppare competenze pratiche nell’uso di librerie Python per **data science**, **visualizzazione** e **machine learning**.
+
+---
+
+## Dataset
+
+Il dataset originale è disponibile qui: [Drug Review Dataset – UCI](https://archive.ics.uci.edu/dataset/461/drug+review+dataset+druglib+com)
+
+---
+
+## Tecnologie e librerie principali
+
+* Python 3.x
+* Pandas, NumPy
+* Matplotlib, Seaborn
+* Scikit-learn, Kmodes/KPrototypes
+* Altri strumenti di preprocessing e visualizzazione
+
+---
+
+## Istruzioni per l’uso
+
+1. Clonare il repository:
+
+   ```bash
+   git clone https://github.com/imNNastya/Progetto-Percezioni.git
+   ```
+2. Installare le librerie necessarie (es. via `pip install -r requirements.txt`).
+3. Pulire e preprocessare i dati con gli script in `pulizia_dataset/`.
+4. Eseguire analisi esplorativa (`analisi_esplorativa/`).
+5. Applicare clustering (`clustering/`) e valutare i gruppi.
+6. Eseguire previsione dei rating (`previsione rating/`).
+
+---
