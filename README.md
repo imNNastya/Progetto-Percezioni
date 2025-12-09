@@ -1,7 +1,3 @@
-Ecco un README completo e adatto a un progetto universitario basato sulla tua repo:
-
----
-
 # Progetto Drug Reviews (Druglib.com)
 
 **Corso:** Principi e modelli della percezione
