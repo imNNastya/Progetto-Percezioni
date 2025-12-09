@@ -6,9 +6,8 @@
 ---
 
 ## 🔎 Descrizione
-
-Questo progetto analizza il dataset *Drug reviews* applicando tecniche di clustering e visualizzazione e machine learning.  
-Il codice è scritto in Python e comprende script per il preprocessing, il clustering dei dati, regressione e la generazione di visualizzazioni. L’obiettivo è esplorare come valutazioni e caratteristiche dei farmaci possono essere interpretate e rappresentate visivamente.
+ 
+Questo progetto si occupa dell’analisi di un dataset reale — il Drug Review Dataset — come parte dell’esame del corso “Principi e modelli della percezione”. L’obiettivo è analizzare le percezioni degli utenti (recensioni) sui farmaci: valutazioni, effetti collaterali, condizioni mediche associate, ecc. 
 
 ---
 
@@ -16,47 +15,19 @@ Il codice è scritto in Python e comprende script per il preprocessing, il clust
 
 - `drugLibTrain_final_v4.tsv`, `drugLibTest_final_v4.tsv` — dataset utilizzato per training e test
 - `analisi_esplorativa/` - cartella che contiene script per generare grafici/plot che aiutano a interpretare i risultati 
-- `clustering` — cartella che contiene script per eseguire l’algoritmo di clustering sui dati con le sue visualizzazioni
+- `clustering/` — cartella che contiene script per eseguire l’algoritmo di clustering sui dati con le sue visualizzazioni
 - `previsione rating/` — cartella che contiene la logica per la parte di rating (rielaborazione / previsione / normalizzazione dei rating originali)  
-- `pulizia_dataset` - cartella che contiene la logica per la pulizia e pre processing del dataset
+- `pulizia_dataset/` - cartella che contiene la logica per la pulizia e pre processing del dataset
+- ... [ finisci a fine riunione )
 ---
-
-## 🚀 Come eseguire il progetto
-
-1. Clonare il repository:
-   ```bash
-   git clone https://github.com/imNNastya/Progetto-Percezioni.git
-   cd Progetto-Percezioni
-````
-
-2. Assicurarsi di avere Python installato (versione consigliata: 3.x) e le librerie necessarie (es. `pandas`, `matplotlib` / `seaborn`, `scikit-learn`, ...).
-
-   ```bash
-   pip install -r requirements.txt  # se fornisci un file requirements
-   ```
-3. Eseguire lo script di clustering:
-
-   ```bash
-   python Clustering.py
-   ```
-4. Generare le visualizzazioni:
-
-   ```bash
-   python visualizzazioni.py
-   ```
-5. I risultati (grafici, output di clustering, eventuali file) saranno salvati nella cartella di output (o nella root), come PNG o altri formati.
-
----
-
-## 📊 Risultati e output
-
-Dopo l’esecuzione, otterrai:
-
-* Cluster generati dal dataset “Drug reviews”
-* Visualizzazioni grafiche che mostrano distribuzioni, gruppi, pattern o caratteristiche significative del dataset
-
-Questi risultati possono essere usati per analizzare la “percezione” espressa nel testo — ad esempio raggruppando recensioni con similarità sintattiche o semantiche, o visualizzando differenze tra cluster.
-
+## 📊 Cosa troverai  
+- Grafici che mostrano la distribuzione di variabili come rating, efficacia, effetti collaterali. 
+- Analisi della frequenza delle condizioni mediche (“condition_standardized”) tramite bar-plot / lollipop-plot. 
+- Box-plot per confrontare la distribuzione del rating tra le top condizioni mediche più comuni. 
+- Heatmap delle correlazioni tra variabili numeriche. 
+- Ranking di farmaci per condizione (usando Bayesian Rating) per mitigare bias da differente numero di recensioni. 
+- Risultati di clustering (diversi algoritmi) per raggruppare farmaci 
+- PERCHE LA PARTE DI MIKE NON LA PRENDE 
 ---
 
 ## 💡 Motivazione e obiettivi
@@ -66,37 +37,4 @@ Questi risultati possono essere usati per analizzare la “percezione” espress
 * Sviluppare competenze pratiche nell’utilizzo di librerie Python per data science e visualizzazione, consolidando concetti affrontati nel corso “Principi e modelli della percezione”.
 
 ---
-
-## 🔧 Possibili sviluppi futuri
-
-* Miglioramento del preprocessing (es. cleaner del testo, rimozione rumore, normalizzazione)
-* Utilizzo di tecniche NLP più avanzate (embedding, topic modeling, sentiment analysis)
-* Introduzione di un’interfaccia interattiva per esplorare i risultati (web app, dashboard)
-* Documentazione più dettagliata: file di configurazione, script modulari, esempi d’uso
-
----
-
-## 🤝 Collaborazione / Contatti
-
-Se vuoi contribuire, proporre modifiche o discutere possibili estensioni:
-
-* Apri un **issue** sul repo oppure invia una **pull request**
-* Puoi contattare direttamente gli autori tramite GitHub
-
----
-
-## 📄 Licenza
-
-(Il progetto non specifica una licenza: se desideri condividerlo pubblicamente, valuta di aggiungere un file `LICENSE` con la licenza scelta — es. MIT, GPL, ecc.)
-
-```
-
----
-
-Se vuoi — posso generare per te **due versioni** del README:  
-- una in **italiano** (come quella sopra)  
-- una in **inglese** (utile se vuoi presentarlo a un’audience internazionale)  
-
-Vuoi che la generi subito?
-::contentReference[oaicite:0]{index=0}
 ```
