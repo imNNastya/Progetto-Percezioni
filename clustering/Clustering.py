@@ -21,7 +21,7 @@ df = pd.concat([train, test], ignore_index=True)
 # =========================
 # 2. Filtra per condizione
 # =========================
-condition = "anxiety disorders"
+condition = "depression"
 df_cond = df[df["condition_standardized"] == condition]
 print(f"Recensioni trovate per '{condition}': {len(df_cond)}")
 
