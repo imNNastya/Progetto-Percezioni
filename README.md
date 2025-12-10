@@ -2,7 +2,7 @@
 
 **Corso:** Principi e modelli della percezione
 **Autori:** Anastasiya Kozemko, Mychael Fokou, Camilla Moretti, Gift Aighobahi
-** link presentazione ** https://www.canva.com/design/DAG5ya_ONbY/YC22XtnKQp-azuZo-CPvjA/view?utm_content=DAG5ya_ONbY&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h272b553aca
+**link presentazione:** https://www.canva.com/design/DAG5ya_ONbY/YC22XtnKQp-azuZo-CPvjA/view?utm_content=DAG5ya_ONbY&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h272b553aca
 
 ---
 
